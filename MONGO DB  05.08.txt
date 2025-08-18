@@ -1,0 +1,124 @@
+Загрузка базы данных в контейнер
+
+docker cp ./grades.json mongodb:/grades.json
+docker cp ./students.json mongodb:/students.json
+
+docker exec mongodb mongoimport --authenticftionDatabase=admin -u=oksana -p=1234 -d cohort_65 -c students --file ./students.json
+
+
+
+docker exec mongodb mongoimport --authenticationDatabase=admin -u=oksana -p=1234 -d cohort_65 -c students --file ./students.json
+
+docker exec mongodb mongoimport --authenticationDatabase=admin -u=oksana -p=1234 -d cohort_65 -c grades --file ./grades.json
+$eq	 /  Совпадает со значением, равным указанному	/   { age: { $eq: 30 } } — возраст равен 30
+$gt / 	Больше указанного значения	                /   { age: { $gt: 30 } } — возраст больше 30
+$gte/	Больше или равно указанному значению	    /   { age: { $gte: 30 } } — возраст 30 или больше
+$in/	Совпадает с любым значением из указанного массива /	{ name: { $in: ["Anna", "Ivan"] } } — имя Анна или Иван
+$lt	/   Меньше указанного значения	                /   { age: { $lt: 30 } } — возраст меньше 30
+$lte/	Меньше или равно указанному значению        /	{ age: { $lte: 30 } } — возраст 30 или меньше
+$ne	/   Не равно указанному значению	            /   { age: { $ne: 30 } } — возраст не равен 30
+$nin/	Не совпадает ни с одним значением из массива/	{ name: { $nin: ["Anna", "Ivan"] } } — имя не Анна и не Иван
+
+db.students.find()
+db.grades.find()
+db.grades.find({type: 'exam', score:{$gt:90}}).size()
+db.grades.find({type: 'exam', score:{$gt:90}})
+db.grades.find().sort({skore: -1})
+db.grades.find({type: 'homework'}).sort({skore: -1})
+db.students.find({_id:126})
+db.students.find({'scores.0.type': 'exam', 'scores.0.score':{$gt:90}})/// правильный запрос
+db.students.find({'scores.0.type': 'exam', 'scores.0.score':{$gt:90}}).size()
+
+db.students.find({scores: {$elemMatch: {type:'exam', score:{$gt:90}}}})
+
+
+Homework
+
+Задача 2
+
+Найти всех студентов, у которых есть хотя бы один квиз (type: "quiz") с оценкой выше 10. (Подсказка: Используй $elemMatch.)
+db.students.find({scores: {$elemMatch: {type:'quiz', score:{$gt:10}}}})
+db.students.find({scores: {$elemMatch: {type:'quiz', score:{$gt:10}}}}).size()
+
+Задача 3
+
+Получить только имена студентов (name), у которых есть хотя бы одна оценка за экзамен (type: "exam") ниже 5. (Подсказка: Используй $elemMatch и проекцию { name: 1 }.)
+db.students.find({scores: {$elemMatch: {type:'exam', score:{$lt:5}}}}, {name: 1, _id:0})
+[
+  { name: 'aimee Zank' },
+  { name: 'Mariette Batdorf' },
+  { name: 'Laureen Salomone' },
+  { name: 'Cody Strouth' },
+  { name: 'Brain Lachapelle' },
+  { name: 'Karry Petrarca' },
+  { name: 'Salena Olmos' },
+  { name: 'Denisha Cast' },
+  { name: 'Tamika Schildgen' },
+  { name: 'Merissa Mann' }
+]
+
+Задача 4
+
+Найти студентов, у которых есть как минимум одна оценка за домашнее задание (type: "homework") выше 30. (Подсказка: Используй $elemMatch.)
+
+db.students.find({scores: {$elemMatch: {type:'homework', score:{$gt:30}}}})
+
+Задача 5
+
+Получить только имена (name) и оценки за квизы (type: "quiz") для всех студентов. (Подсказка: Используй проекцию { name: 1, "scores": { $elemMatch: { type: "quiz" } } }.)
+
+db.students.find({}, { name: 1, "scores": { $elemMatch: { type: "quiz" } },_id:0 })
+
+{
+    name: 'Verdell Sowinski',
+    scores: [ { type: 'quiz', score: 84.74586220889356 } ]
+  },
+  {
+    name: 'Gisela Levin',
+    scores: [ { type: 'quiz', score: 0.6578497966368002 } ]
+  },
+  {
+    name: 'Dodie Staller',
+    scores: [ { type: 'quiz', score: 31.84300235104542 } ]
+  },
+
+
+Задача 6
+
+Найти всех студентов, у которых есть оценки за экзамены (type: "exam") или квизы (type: "quiz"), и вернуть их имена и оценки. (Подсказка: Используй $elemMatch и проекцию { name: 1, scores: 1 }.)
+
+db.students.find({scores: {$elemMatch: {$or: [{ type: "exam" }, { type: "quiz" }]}}}, {name: 1, scores: 1, _id: 0})
+
+06.08.2025
+Classwork
+// explain()
+db.students.explain().find()
+db.students.explain().find({_id: 22})
+db.students.explain().find({
+	"scores": {
+		$elemMatch:{
+			type: {
+				$in: ['exam','quiz']
+			}
+		}
+	}
+}, {_id:0, name:1, scores:1})
+
+db.students.explain("executionStats").find({
+	"scores": {
+		$elemMatch:{
+			type: {
+				$in: ['exam','quiz']
+			}
+		}
+	}
+}, {_id:0, name:1, scores:1})
+
+db.grades.explain("executionStats").find()
+db.grades.explain("executionStats").find({type: 'exam'})
+db.grades.explain("executionStats").find({student_id:42, type: 'exam'})
+
+db.grades.getIndexes()
+db.grades.createIndex({student_id:1})
+db.grades.createIndex({student_id:1, type: -1})
+db.grades.dropIndex({student_id:1})

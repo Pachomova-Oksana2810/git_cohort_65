@@ -1,0 +1,291 @@
+MySQL
+docker run --name mysqldb -e MYSQL_ROOT_PASSWORD=1234 -d mysql:8.4
+docker start mysqldb 
+docker exec -it mysqldb mysql -u root -p
+==============================
+SHOW DATABASES;
+CREATE DATABASE cohort_65;
+CREATE DATABASE  IF NOT EXISTS cohort_65;
+SHOW WARNINGS;
+DROP DATABASE  cohort_65;
+DROP DATABASE  IF  EXISTS  cohort_65;
+USE cohort_65;
+SELECT DATABASE();
+SHOW TABLES;
+
+CREATE TABLE IF NOT EXISTS products (
+         productID    INT UNSIGNED  NOT NULL AUTO_INCREMENT,
+         productCode  CHAR(3)       NOT NULL DEFAULT '',
+         name         VARCHAR(30)   NOT NULL DEFAULT '',
+         quantity     INT UNSIGNED  NOT NULL DEFAULT 0,
+         price        DECIMAL(7,2)  NOT NULL DEFAULT 99999.99,
+         PRIMARY KEY  (productID)
+       );
+SELECT * FROM products;
+
+INSERT INTO products VALUES (1001, 'PEN', 'Pen Red', 5000, 1.23);
+DELETE FROM products WHERE productID LIKE '1002';
+
+INSERT INTO products VALUES
+         (NULL, 'PEN', 'Pen Blue',  8000, 1.25),
+         (NULL, 'PEN', 'Pen Black', 2000, 1.25);
+SHOW CREATE TABLE ‘products’
+DESCRIBE products;
+SHOW CREATE TABLE products;
+SHOW CREATE TABLE products \G;
+INSERT INTO products (productCode, name, quantity, price) VALUES
+         ('PEC', 'Pencil 2B', 10000, 0.48),
+         ('PEC', 'Pencil 2H', 8000, 0.49);
+ INSERT INTO products (productCode, name) VALUES ('PEC', 'Pencil HB');
+ INSERT INTO products values (NULL, NULL, NULL, NULL, NULL);
+ 
+ SELECT name FROM day_of_the_week WHERE CHAR_LENGTH(name)<7;
+ DELETE FROM products WHERE productID = 1005;
+ DELETE FROM products WHERE productCode = 'PEC';
+ 
+ INSERT INTO products VALUES
+         (1004, 'PEC', 'Pencil 2B', 10000, 0.48),
+         (1005, 'PEC', 'Pencil 2H', 8000, 0.49);
+     
+ SELECT name, price FROM products;
+ SELECT productCode, price, quantity FROM products;
+ SELECT * FROM products;
+ SELECT productCode AS code, price, quantity FROM products;
+ SELECT productID AS id, name AS nameOFProduct, productCode AS code, price FROM products;
+ SELECT * FROM products WHERE price > 1;
+ SELECT * FROM products WHERE quantity <= 2000;
+ SELECT * FROM products WHERE productCode = 'PEC';
+ SELECT * FROM products WHERE quantity = 8000 AND quantity = 2000;
+ SELECT * FROM products WHERE quantity = 8000 OR quantity = 2000;
+ SELECT * FROM products WHERE quantity >= 2000 AND quantity < 10000;
+ 
+ SELECT * FROM products WHERE productCode > 'P';
+ SELECT * FROM products WHERE productCode < 'PEN';
+ 
+ SELECT * FROM products WHERE name LIKE '%Red';
+ SELECT * FROM products WHERE name LIKE 'PEN %';
+ SELECT * FROM products WHERE name LIKE '%en%';
+ 
+ INSERT INTO products VALUES
+         (1007, 'MRK', 'Marker Red', 2000, 2.49),
+         (1008, 'MRK', 'Marker Blue', 3000, 2.49);
+ 
+  SELECT * FROM products WHERE name NOT LIKE '%Red';
+  UPDATE products SET quantity = quantity + 1000 WHERE productCode = 'MRK';
+  UPDATE products SET price = price * 1.1;
+  SELECT * FROM products WHERE quantity > 5000 AND name LIKE 'PEN %';
+  SELECT productCode,name, quantity, price FROM products WHERE name NOT LIKE 'PEN %';
+  SELECT productCode,name, quantity, price FROM products WHERE productCode = 'PEC' OR productCode = 'MRK';
+  
+ 1 Выведите «name» и «quantity» всех продуктов с «productCode» равным «PEC»
+   SELECT name, quantity FROM products WHERE productCode = 'PEC';
+  mysql> SELECT name, quantity FROM products WHERE productCode = 'PEC';
++-----------+----------+
+| name      | quantity |
++-----------+----------+
+| Pencil 2B |    10000 |
+| Pencil 2H |     8000 |
++-----------+----------+
+2 rows in set (0.00 sec)
+
+2. Выведите «name» всех продуктов с «quantity» больше 9000.
+SELECT name FROM products WHERE quantity >= 9000;
+mysql> SELECT name FROM products WHERE quantity >= 9000;
++-----------+
+| name      |
++-----------+
+| Pencil 2B |
++-----------+
+1 row in set (0.01 sec)
+
+3. Выведите «name», «productCode» и «price» всех продуктов дешевле 2
+SELECT name, productCode, price FROM products WHERE price >= 2;
+mysql> SELECT name, productCode, price FROM products WHERE price >= 2;
++-------------+-------------+-------+
+| name        | productCode | price |
++-------------+-------------+-------+
+| Marker Red  | MRK         |  2.74 |
+| Marker Blue | MRK         |  2.74 |
++-------------+-------------+-------+
+2 rows in set (0.01 sec)
+
+4. Отобразить 'name', 'quantity' и price всех продуктов с 'productCode' равным 'PEN'  
+  SELECT name, quantity, price FROM products WHERE productCode = 'PEN';
+  
+mysql> SELECT name, quantity, price FROM products WHERE productCode = 'PEN';
++-----------+----------+-------+
+| name      | quantity | price |
++-----------+----------+-------+
+| Pen Red   |     5000 |  1.35 |
+| Pen Blue  |     8000 |  1.38 |
+| Pen Black |     2000 |  1.38 |
++-----------+----------+-------+
+3 rows in set (0.01 sec)
+
+5. [Optional] Отобразить 'productID' всех продуктов, содержащих слово 'Blue' в их 'name'
+SELECT productID FROM products WHERE name LIKE '%Blue';
+mysql> SELECT productID FROM products WHERE name LIKE '%Blue';
++-----------+
+| productID |
++-----------+
+|      1002 |
+|      1008 |
++-----------+
+2 rows in set (0.01 sec)
+
+6. [Optional] Отобразить 'name' всех продуктов, содержащих символ '2' в их 'name' и 'quantity' больше чем 9000.
+SELECT name FROM products WHERE name LIKE '%2%' AND quantity > 9000;  
+mysql> SELECT name FROM products WHERE name LIKE '%2%' AND quantity > 9000; 
++-----------+
+| name      |
++-----------+
+| Pencil 2B |
++-----------+
+1 row in set (0.00 sec)
+
+7. [Optional] Отобразить name и price всех продуктов, с колличеством в диапазоне между 4000 и 9000. Отсортировать вывод в алфавитном порядке по name  
+SELECT name, price FROM products WHERE quantity >= 4000 AND quantity < 9000 ORDER BY name ASC; 
+SELECT name, price FROM products WHERE quantity BETWEEN 4000 AND 9000 ORDER BY name ASC; 
+mysql> SELECT name, price FROM products WHERE quantity >= 4000 AND quantity < 9000 ORDER BY name ASC; 
++-------------+-------+
+| name        | price |
++-------------+-------+
+| Marker Blue |  2.74 |
+| Pen Blue    |  1.38 |
+| Pen Red     |  1.35 |
+| Pencil 2H   |  0.54 |
++-------------+-------+
+4 rows in set (0.01 sec)
+
+8. [Optional] Отобразить всю существующую информацию о продуктах имеющих price 0.53, 0.54 или 1.38
+SELECT * FROM products WHERE price = 0.53 OR price = 0.54 OR price = 1.38;
+mysql> SELECT * FROM products WHERE price = 0.53 OR price = 0.54 OR price = 1.38;
++-----------+-------------+-----------+----------+-------+
+| productID | productCode | name      | quantity | price |
++-----------+-------------+-----------+----------+-------+
+|      1002 | PEN         | Pen Blue  |     8000 |  1.38 |
+|      1003 | PEN         | Pen Black |     2000 |  1.38 |
+|      1004 | PEC         | Pencil 2B |    10000 |  0.53 |
+|      1005 | PEC         | Pencil 2H |     8000 |  0.54 |
++-----------+-------------+-----------+----------+-------+
+4 rows in set (0.00 sec)
+
+VAR 8/2
+SELECT * FROM products WHERE price IN (0.53, 0.54, 1.38);
+mysql> SELECT * FROM products WHERE price IN (0.53, 0.54, 1.38);
++-----------+-------------+-----------+----------+-------+
+| productID | productCode | name      | quantity | price |
++-----------+-------------+-----------+----------+-------+
+|      1002 | PEN         | Pen Blue  |     8000 |  1.38 |
+|      1003 | PEN         | Pen Black |     2000 |  1.38 |
+|      1004 | PEC         | Pencil 2B |    10000 |  0.53 |
+|      1005 | PEC         | Pencil 2H |     8000 |  0.54 |
++-----------+-------------+-----------+----------+-------+
+4 rows in set (0.01 sec)
+
+31.07.2025
+SELECT * FROM products WHERE productCode = "MRK" OR productCode = "PEC";
+SELECT * FROM products WHERE productCode  IN ("MRK",  "PEC");
+SELECT * FROM products WHERE productCode  NOT IN ("MRK",  "PEC");
+SELECT * FROM products WHERE quantity   BETWEEN 2000 AND 4000;
+
+SELECT * FROM products WHERE productCode != NULL; //  
+SELECT * FROM products WHERE productCode IS NOT NULL;
+SELECT * FROM products WHERE productCode IS NULL;
+
+SELECT * FROM products ORDER BY quantity;
+SELECT * FROM products ORDER BY quantity DESC;
+SELECT * FROM products ORDER BY quantity DESC, price;
+SELECT * FROM products WHERE productCode IN ("MRK", "PEC") ORDER BY quantity;
+SELECT name, quantity, price FROM products WHERE productCode IN ("MRK", "PEC") ORDER BY quantity;
+SELECT name, quantity, price FROM products WHERE productCode IN ("MRK", "PEN") ORDER BY quantity LIMIT 3;
+SELECT name, quantity, price FROM products WHERE productCode IN ("MRK", "PEN") ORDER BY quantity LIMIT 1, 3;
+SELECT name, price FROM products WHERE quantity BETWEEN 4000 AND 9000 ORDER BY name ASC; 
+
+SELECT name AS `Product name`, quantity AS `Quantity`, price AS `Product price` 
+          FROM products WHERE productCode IN ("MRK", "PEN") ORDER BY quantity LIMIT 1, 3;
+
+SELECT CONCAT (productCode, "-->", name) AS `Product description`, quantity AS `Quantity`, price AS `Product price` 
+          FROM products WHERE productCode IN ("MRK", "PEN") ORDER BY quantity LIMIT 1, 3;
+          
+SELECT productCode FROM products; 
+SELECT DISTINCT productCode FROM products; // Уникальные productCode
+SELECT DISTINCT productCode, productID FROM products;   
+SELECT DISTINCT productCode, quantity FROM products; 
+
+SELECT COUNT(*) FROM products;  // COUNT - количество позиций, но не сумма 
+SELECT COUNT(quantity) FROM products;     
+SELECT COUNT(DISTINCT productCode) FROM products; 
+
+SELECT MAX(price), MIN(price), AVG(price), SUM(quantity) FROM products;
+SELECT MAX(price) AS `Max price`, MIN(price) AS `Min price`, AVG(price) AS `Average price`, SUM(quantity) AS `Total summa` FROM products;
+
+SELECT MAX(price) AS `Max price`, MIN(price) AS `Min price`, CAST(AVG(price) AS DECIMAL(7,2)) AS `Average price`, SUM(quantity) AS `Total summa` FROM products;
+
+SELECT MAX(price) AS `Max price`, MIN(price) AS `Min price`, 
+      CAST(AVG(price) AS DECIMAL(7,2)) AS `Average price`, 
+      SUM(quantity) AS `Total quantity`,
+      SUM(quantity * price) AS `Total cost` FROM products;
+      
+INSERT INTO products VALUES (1009, 'PEC', 'Caran d\'Ache', 1, 500);    
+
+SELECT MAX(price) AS `Max price`, MIN(price) AS `Min price`, 
+      CAST(AVG(price) AS DECIMAL(7,2)) AS `Average price`, 
+      SUM(quantity) AS `Total quantity`,
+      SUM(quantity * price) AS `Total cost` FROM products GROUP BY productCode;
+      
+SELECT productCode AS Code, MAX(price) AS `Max price`, MIN(price) AS `Min price`, 
+      CAST(AVG(price) AS DECIMAL(7,2)) AS `Average price`, 
+      SUM(quantity) AS `Total quantity`,
+      SUM(quantity * price) AS `Total cost` FROM products GROUP BY productCode;  
+      
+SELECT * FROM products GROUP BY productCode; //  Не работает     
+SELECT productCode FROM products GROUP BY productCode; 
+
+SELECT productCode AS Code, MAX(price) AS `Max price`, MIN(price) AS `Min price`, 
+      CAST(AVG(price) AS DECIMAL(7,2)) AS `Average price`, 
+      SUM(quantity) AS `Total quantity`,
+      SUM(quantity * price) AS `Total cost` FROM products WHERE price < 100 GROUP BY productCode;          
+
+SELECT productCode AS Code, MAX(price) AS `Max price`, MIN(price) AS `Min price`, 
+      CAST(AVG(price) AS DECIMAL(7,2)) AS `Average price`, 
+      SUM(quantity) AS `Total quantity`,
+      SUM(quantity * price) AS `Total cost` FROM products WHERE price < 100 GROUP BY productCode WITH ROLLUP;
+      
+SELECT productCode AS Code, MAX(price) AS `Max price`, MIN(price) AS `Min price`, 
+      CAST(AVG(price) AS DECIMAL(7,2)) AS `Average price`, 
+      SUM(quantity) AS `Total quantity`,
+      SUM(quantity * price) AS `Total cost` FROM products WHERE price < 100 GROUP BY productCode HAVING `Total cost` > 10000;  
+      
+1. Отобразить name, price и quantity 3 наиболее дорогих продуктов.
+SELECT name, price, quantity  FROM products  ORDER BY price  DESC LIMIT 3;
+
+SELECT name, price, quantity  FROM products  ORDER BY price DESC  LIMIT 3;
++--------------+--------+----------+
+| name         | price  | quantity |
++--------------+--------+----------+
+| Caran d'Ache | 500.00 |        1 |
+| Marker Red   |   2.74 |     3000 |
+| Marker Blue  |   2.74 |     4000 |
++--------------+--------+----------+
+3 rows in set (0.00 sec)
+2. Построить для всех продуктов отчет со следующими столбцами:
+'Product Description', 'Item Price', 'Quantity', 'Cost'. Каждая строка должна выглядеть следующим образом: cost равны price * quantity.
+Остортировать вывод в порядке возрастания 'Cost'.
+ 
+ SELECT  name AS 'Product Description', price AS 'Item Price', quantity AS 'Quantity',  (price * quantity ) AS 'Cost' FROM products ORDER BY Cost ASC;   
++---------------------+------------+----------+----------+
+| Product Description | Item Price | Quantity | Cost     |
++---------------------+------------+----------+----------+
+| Caran d'Ache        |     500.00 |        1 |   500.00 |
+| Pen Black           |       1.38 |     2000 |  2760.00 |
+| Pencil 2H           |       0.54 |     8000 |  4320.00 |
+| Pencil 2B           |       0.53 |    10000 |  5300.00 |
+| Pen Red             |       1.35 |     5000 |  6750.00 |
+| Marker Red          |       2.74 |     3000 |  8220.00 |
+| Marker Blue         |       2.74 |     4000 | 10960.00 |
+| Pen Blue            |       1.38 |     8000 | 11040.00 |
++---------------------+------------+----------+----------+
+8 rows in set (0.01 sec)
+          
+      

@@ -1,0 +1,37 @@
+docker run -it --name bubuntu -d ubuntu:24.04
+docker exec -it bubuntu bash
+либо управлять пользователями, правами доступа, переименовывать 1000 файлов, и т.д.
+ls
+ls home/
+ls etc/
+ls boot/
+ls sbin/
+ls usr/
+ls opt/
+cd usr/
+cd include
+cd ../..
+pwd
+cd usr/lib
+echo
+echo "Hello world" > hello.tx
+cat hello.tx
+rm hello.tx
+ cd /
+ cd tmp
+ echo "First" > work.txt
+ cat work.txt
+вот интересная команда которая показывает сколько места осталось
+df -h или что тормозит процессор)top или htop
+  echo "Second" >> work.txt
+  cp work.txt w1.txt
+  mv w1.txt ../..
+  mkdir test
+  ls ./test
+  ls -a
+  ls -l
+  ls -al /
+  cat ../.dockerenv
+  touch test/work2.txt
+  printf "First"
+ 

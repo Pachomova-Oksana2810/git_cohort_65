@@ -1,0 +1,196 @@
+MONGODB
+docker volume create mongodb_volume
+
+docker run --name mongodb -v mongodb_volume:/data/db -p 27017:27017 \
+	-e MONGO_INITDB_ROOT_USERNAME=oksana \
+	-e MONGO_INITDB_ROOT_PASSWORD=1234 \
+	-d mongo:8.0.5
+	
+docker exec -it mongodb mongosh -u oksana -p
+docker start mongodb
+show databases
+use cohort_65
+show dbs
+show collections
+db
+db.pets.insertOne({name: 'Vaska', type: 'cat', age: 5})// ObjectId('68908599bbda50b392300589')
+//SELECT * FROM pets;
+db.pets.find()
+db.pets.insertOne({name: 'Boris', type: 'cat', age: 3, breed: 'Siam'}) // ObjectId('689086d2bbda50b39230058a')
+db.pets.find({name: 'Vaska'})
+//SELECT * FROM pets WHERE name= 'Vaska';
+db.pets.deleteOne ({name: 'Vaska'})
+db.pets.insertMany([
+{name: 'Vaska', type: 'Cat', age: 5},
+{name: 'Tom', type: 'Cat', age: 85},
+{name: 'Jerry', type: 'Mouse', age: 85},
+{name: 'Ace', type: 'Dog', age: 5},
+{name: 'Prince', type: 'Dog', age: 3, breed: 'Boxer'}
+])
+db.pets.deleteMany({type: 'Cat'}) // удалить всех котов 
+db.pets.insertMany([
+{name: 'Vaska', type: 'Cat', age: 5},
+{name: 'Tom', type: 'Cat', age: 85},
+{name: 'Jerry', type: 'Mouse', age: 85},
+])	
+db.pets.deleteOne({_id: ObjectId('6890890cbbda50b39230058d')})
+db.pets.insertOne({_id: {planet: 'Mars', number:987654321}, name: 'Alien', type: 'Moster'})
+db.pets.find().size()
+db.pets.find({breed: 'Siam'})
+db.pets.find({breed: 'Siam'}, {name:1, type:1})
+db.pets.find({breed: 'Siam'}, {name:0})
+db.pets.find({breed: 'Siam'}, {name:1, type:0})//так не работает
+db.pets.find({type: 'Cat'}, {name:1, age:1, _id:0})
+db.pets.find({type: 'Cat', age: 3})
+
+db.pets.find({ type: { $in: [ "Cat", "Mouse" ] } } )
+db.pets.find({type: 'Cat', age:{$gte: 5}})
+db.pets.find().skip(1).limit(2) //первый пропускаем и берем второй и третий
+db.pets.find().sort({age:1}) //сортирует по возрасту по возрастание
+
+$eq	 /  Совпадает со значением, равным указанному	/   { age: { $eq: 30 } } — возраст равен 30
+$gt / 	Больше указанного значения	                /   { age: { $gt: 30 } } — возраст больше 30
+$gte/	Больше или равно указанному значению	    /   { age: { $gte: 30 } } — возраст 30 или больше
+$in/	Совпадает с любым значением из указанного массива /	{ name: { $in: ["Anna", "Ivan"] } } — имя Анна или Иван
+$lt	/   Меньше указанного значения	                /   { age: { $lt: 30 } } — возраст меньше 30
+$lte/	Меньше или равно указанному значению        /	{ age: { $lte: 30 } } — возраст 30 или меньше
+$ne	/   Не равно указанному значению	            /   { age: { $ne: 30 } } — возраст не равен 30
+$nin/	Не совпадает ни с одним значением из массива/	{ name: { $nin: ["Anna", "Ivan"] } } — имя не Анна и не Иван
+
+Homework 04.08.2025
+Задача 1
+
+Найти всех животных, имя которых начинается с одной из первых пяти букв алфавита
+db.pets.find({name:{$regex: '^[A-E]', $options:'i'}})
+db.pets.find({name:{$regex: '^[A-E]'}})// вариант без регистра
+db.pets.find({name:{$gte: 'A', $lt:'E'}})// вариант от и до
+db.pets.find({name:/ [A-E].*/ })
+
+Задача 2
+Найти третье и четвертое животное, считая по возрасту
+db.pets.find().sort({age: 1}).skip(2).limit(2) // по возростанию 
+db.pets.find().sort({age: -1}).skip(2).limit(2) // по убыванию
+
+
+Classwork 05.08.2025
+
+db.pets.find({breed: 'Siam'})
+$exists
+db.pets.find({breed: {$exists: true}}) поиск по всем на наличин породы
+db.pets.find({breed: {$exists: true}}, {_id:0})
+db.pets.find({breed: {$exists: 0}}, {_id:0}) вывод все без породы
+db.pets.find({breed: {$exists: 42}}, {_id:0}) вывод всех с породой
+$or
+db.pets.find({$or:[{type: 'Mause'}, {age: {$lt:5}}]})
+
+db.pets.find({$and:[{type: 'Cat'}, {age: {$gte:5}}]})
+db.pets.find({type: 'Cat', age:{$gte: 5}})
+
+$set установить
+db.pets.updateOne({ name: 'Jarry'}, { $set: { IQ: 100 }})
+db.pets.updateMany({ IQ:{$exists: 0}}, { $set: { IQ: 10 }})
+db.pets.updateMany({}, { $set: { IQ: 10 }}) / обновление применяется ко всем
+
+db.pets.updateMany({}, { $inc: { IQ: -10 }})или уменьшить если -10 
+db.pets.updateMany({}, { $inc: { IQ: 10 }})или увеличиться если 10 
+
+db.pets.updateMany({}, { $unset: { IQ:'' }}) 
+
+$push
+db.pets.updateMany({type: 'Cat'}, { $set: {foods: ['Milk', 'Mause']}})
+db.pets.updateMany({type: {$in: ['Cat', 'Dog']}}, { $push: {foods: 'Meat'}})
+db.pets.updateOne({name:'Boris'}, {$push: {foods: 'Whiskas'}})
+db.pets.updateMany({type:'Cat'}, { $push: {foods: 'Kitekat'}})
+
+$pop
+db.pets.updateMany({type:'Cat'}, { $pop: {foods: 1}}) 1- последний / -1 - первый
+db.pets.updateMany({type:'Cat'}, { $addToSet: {foods: 'Pro Plan'}})
+db.pets.updateMany({type:'Dog'}, { $addToSet: {foods: 'Bone'}})
+db.pets.updateMany({type:'Mouse'}, { $addToSet: {foods: 'Cheese'}})
+
+db.pets.find({foods: 'Whiskas'})
+db.pets.find({foods: {$in: ['Cheese', 'Bone']}})
+db.pets.find({foods: {$all: ['Milk', 'Kitekat']}})
+
+Загрузка базы данных в контейнер
+docker cp ./grades.json mongodb:/grades.json
+docker cp ./students.json mongodb:/students.json
+
+docker exec mongodb mongoimport --authenticftionDatabase=admin -u=oksana -p=1234 -d cohort_65 -c students --file ./students.json
+
+
+
+docker exec mongodb mongoimport --authenticationDatabase=admin -u=oksana -p=1234 -d cohort_65 -c students --file ./students.json
+
+docker exec mongodb mongoimport --authenticationDatabase=admin -u=oksana -p=1234 -d cohort_65 -c grades --file ./grades.json
+
+db.students.find()
+db.grades.find()
+db.grades.find({type: 'exam', score:{$gt:90}}).size()
+db.grades.find({type: 'exam', score:{$gt:90}})
+db.grades.find().sort({skore: -1})
+db.grades.find({type: 'homework'}).sort({skore: -1})
+db.students.find({_id:126})
+db.students.find({'scores.0.type': 'exam', 'scores.0.score':{$gt:90}})/// правильный запрос
+db.students.find({'scores.0.type': 'exam', 'scores.0.score':{$gt:90}}).size()
+
+db.students.find({scores: {$elemMatch: {type:'exam', score:{$gt:90}}}})
+
+
+Homework
+
+Задача 2
+
+Найти всех студентов, у которых есть хотя бы один квиз (type: "quiz") с оценкой выше 10. (Подсказка: Используй $elemMatch.)
+db.students.find({scores: {$elemMatch: {type:'quiz', score:{$gt:10}}}})
+db.students.find({scores: {$elemMatch: {type:'quiz', score:{$gt:10}}}}).size()
+
+Задача 3
+
+Получить только имена студентов (name), у которых есть хотя бы одна оценка за экзамен (type: "exam") ниже 5. (Подсказка: Используй $elemMatch и проекцию { name: 1 }.)
+db.students.find({scores: {$elemMatch: {type:'exam', score:{$lt:5}}}}, {name: 1, _id:0})
+[
+  { name: 'aimee Zank' },
+  { name: 'Mariette Batdorf' },
+  { name: 'Laureen Salomone' },
+  { name: 'Cody Strouth' },
+  { name: 'Brain Lachapelle' },
+  { name: 'Karry Petrarca' },
+  { name: 'Salena Olmos' },
+  { name: 'Denisha Cast' },
+  { name: 'Tamika Schildgen' },
+  { name: 'Merissa Mann' }
+]
+
+Задача 4
+
+Найти студентов, у которых есть как минимум одна оценка за домашнее задание (type: "homework") выше 30. (Подсказка: Используй $elemMatch.)
+
+db.students.find({scores: {$elemMatch: {type:'homework', score:{$gt:30}}}})
+
+Задача 5
+
+Получить только имена (name) и оценки за квизы (type: "quiz") для всех студентов. (Подсказка: Используй проекцию { name: 1, "scores": { $elemMatch: { type: "quiz" } } }.)
+
+db.students.find({}, { name: 1, "scores": { $elemMatch: { type: "quiz" } },_id:0 })
+
+{
+    name: 'Verdell Sowinski',
+    scores: [ { type: 'quiz', score: 84.74586220889356 } ]
+  },
+  {
+    name: 'Gisela Levin',
+    scores: [ { type: 'quiz', score: 0.6578497966368002 } ]
+  },
+  {
+    name: 'Dodie Staller',
+    scores: [ { type: 'quiz', score: 31.84300235104542 } ]
+  },
+
+
+Задача 6
+
+Найти всех студентов, у которых есть оценки за экзамены (type: "exam") или квизы (type: "quiz"), и вернуть их имена и оценки. (Подсказка: Используй $elemMatch и проекцию { name: 1, scores: 1 }.)
+
+db.students.find({scores: {$elemMatch: {$or: [{ type: "exam" }, { type: "quiz" }]}}}, {name: 1, scores: 1, _id: 0})
+

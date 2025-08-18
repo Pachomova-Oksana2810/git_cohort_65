@@ -1,0 +1,31 @@
+1. Отобразить name, price и quantity 3 наиболее дорогих продуктов.
+SELECT name, price, quantity  FROM products  ORDER BY price  DESC LIMIT 3;
+
+SELECT name, price, quantity  FROM products  ORDER BY price DESC  LIMIT 3;
++--------------+--------+----------+
+| name         | price  | quantity |
++--------------+--------+----------+
+| Caran d'Ache | 500.00 |        1 |
+| Marker Red   |   2.74 |     3000 |
+| Marker Blue  |   2.74 |     4000 |
++--------------+--------+----------+
+3 rows in set (0.00 sec)
+2. Построить для всех продуктов отчет со следующими столбцами:
+'Product Description', 'Item Price', 'Quantity', 'Cost'. Каждая строка должна выглядеть следующим образом: cost равны price * quantity.
+Остортировать вывод в порядке возрастания 'Cost'.
+ 
+ SELECT  name AS 'Product Description', price AS 'Item Price', quantity AS 'Quantity',  (price * quantity ) AS 'Cost' FROM products ORDER BY Cost ASC;   
++---------------------+------------+----------+----------+
+| Product Description | Item Price | Quantity | Cost     |
++---------------------+------------+----------+----------+
+| Caran d'Ache        |     500.00 |        1 |   500.00 |
+| Pen Black           |       1.38 |     2000 |  2760.00 |
+| Pencil 2H           |       0.54 |     8000 |  4320.00 |
+| Pencil 2B           |       0.53 |    10000 |  5300.00 |
+| Pen Red             |       1.35 |     5000 |  6750.00 |
+| Marker Red          |       2.74 |     3000 |  8220.00 |
+| Marker Blue         |       2.74 |     4000 | 10960.00 |
+| Pen Blue            |       1.38 |     8000 | 11040.00 |
++---------------------+------------+----------+----------+
+8 rows in set (0.01 sec)
+          

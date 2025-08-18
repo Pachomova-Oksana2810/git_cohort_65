@@ -1,0 +1,83 @@
+1. Показать всю информацию о товарах, поставляемых компанией «ABC Traders».
+mysql> SELECT p.*
+    -> FROM products p
+    -> JOIN products_suppliers ps ON p.productID = ps.productID
+    -> JOIN suppliers s ON ps.supplierID = s.supplierID
+    -> WHERE s.name = 'ABC Traders';
++-----------+-------------+-----------+----------+-------+
+| productID | productCode | name      | quantity | price |
++-----------+-------------+-----------+----------+-------+
+|      1001 | PEN         | Pen Red   |     5000 |  1.23 |
+|      1002 | PEN         | Pen Blue  |     8000 |  1.25 |
+|      1003 | PEN         | Pen Black |     2000 |  1.25 |
++-----------+-------------+-----------+----------+-------+
+3 rows in set (0.01 sec)
+2. Показать общую стоимость всей продукции, поставляемой поставщиками: «XYZ Company», «QQ Corp».
+mysql> SELECT s.name AS Supplier, SUM(p.price * p.quantity) AS TotalCost
+    -> FROM products p
+    -> JOIN products_suppliers ps ON p.productID = ps.productID
+    -> JOIN suppliers s ON ps.supplierID = s.supplierID
+    -> WHERE s.name IN ('XYZ Company', 'QQ Corp')
+    -> GROUP BY s.name;
++-------------+-----------+
+| Supplier    | TotalCost |
++-------------+-----------+
+| XYZ Company |   4800.00 |
+| QQ Corp     |   6150.00 |
++-------------+-----------+
+2 rows in set (0.01 sec)
+
+3. Показать среднюю цену поставки продукции по поставщикам.
+mysql> SELECT s.name AS Supplier, AVG(p.price) AS AveragePrice
+    -> FROM products p
+    -> JOIN products_suppliers ps ON p.productID = ps.productID
+    -> JOIN suppliers s ON ps.supplierID = s.supplierID
+    -> GROUP BY s.name;
++-------------+--------------+
+| Supplier    | AveragePrice |
++-------------+--------------+
+| ABC Traders |     1.243333 |
+| XYZ Company |     0.480000 |
+| QQ Corp     |     1.230000 |
++-------------+--------------+
+3 rows in set (0.00 sec)
+
+4. Найдите поставщика самых дешевых маркеров (по коду MRK) и укажите его название, телефон и цену маркера.
+mysql> SELECT s.name, s.phone, p.price
+    -> FROM products p
+    -> JOIN products_suppliers ps ON p.productID = ps.productID
+    -> JOIN suppliers s ON ps.supplierID = s.supplierID
+    -> WHERE p.productCode = 'MRK'
+    -> ORDER BY p.price ASC
+    -> LIMIT 1;
+Empty set (0.01 sec) не были привязаны к поставщикам.
+
+mysql> SELECT s.name, s.phone, p.productCode, p.price
+    -> FROM products p
+    -> LEFT JOIN products_suppliers ps ON p.productID = ps.productID
+    -> LEFT JOIN suppliers s ON ps.supplierID = s.supplierID
+    -> WHERE p.productCode = 'MRK'
+    -> ORDER BY p.price ASC;
++------+-------+-------------+-------+
+| name | phone | productCode | price |
++------+-------+-------------+-------+
+| NULL | NULL  | MRK         |  2.49 |
+| NULL | NULL  | MRK         |  2.49 |
++------+-------+-------------+-------+
+2 rows in set (0.01 sec)
+
+5*) Показать информацию о поставщике, который поставляет максимальное количество продукции по productCode:  
+
+mysql> SELECT s.name, s.phone, p.productCode, SUM(p.quantity) AS TotalSupplied
+    -> FROM products p
+    -> JOIN products_suppliers ps ON p.productID = ps.productID
+    -> JOIN suppliers s ON ps.supplierID = s.supplierID
+    -> GROUP BY s.supplierID, p.productCode
+    -> ORDER BY TotalSupplied DESC
+    -> LIMIT 1;
++-------------+----------+-------------+---------------+
+| name        | phone    | productCode | TotalSupplied |
++-------------+----------+-------------+---------------+
+| ABC Traders | 88881111 | PEN         |         15000 |
++-------------+----------+-------------+---------------+
+1 row in set (0.00 sec)             

@@ -1,0 +1,104 @@
+1 Выведите «name» и «quantity» всех продуктов с «productCode» равным «PEC»
+   SELECT name, quantity FROM products WHERE productCode = 'PEC';
+  mysql> SELECT name, quantity FROM products WHERE productCode = 'PEC';
++-----------+----------+
+| name      | quantity |
++-----------+----------+
+| Pencil 2B |    10000 |
+| Pencil 2H |     8000 |
++-----------+----------+
+2 rows in set (0.00 sec)
+
+2. Выведите «name» всех продуктов с «quantity» больше 9000.
+SELECT name FROM products WHERE quantity >= 9000;
+mysql> SELECT name FROM products WHERE quantity >= 9000;
++-----------+
+| name      |
++-----------+
+| Pencil 2B |
++-----------+
+1 row in set (0.01 sec)
+
+3. Выведите «name», «productCode» и «price» всех продуктов дешевле 2
+SELECT name, productCode, price FROM products WHERE price >= 2;
+mysql> SELECT name, productCode, price FROM products WHERE price >= 2;
++-------------+-------------+-------+
+| name        | productCode | price |
++-------------+-------------+-------+
+| Marker Red  | MRK         |  2.74 |
+| Marker Blue | MRK         |  2.74 |
++-------------+-------------+-------+
+2 rows in set (0.01 sec)
+
+4. Отобразить 'name', 'quantity' и price всех продуктов с 'productCode' равным 'PEN'  
+  SELECT name, quantity, price FROM products WHERE productCode = 'PEN';
+  
+mysql> SELECT name, quantity, price FROM products WHERE productCode = 'PEN';
++-----------+----------+-------+
+| name      | quantity | price |
++-----------+----------+-------+
+| Pen Red   |     5000 |  1.35 |
+| Pen Blue  |     8000 |  1.38 |
+| Pen Black |     2000 |  1.38 |
++-----------+----------+-------+
+3 rows in set (0.01 sec)
+
+5. [Optional] Отобразить 'productID' всех продуктов, содержащих слово 'Blue' в их 'name'
+SELECT productID FROM products WHERE name LIKE '%Blue';
+mysql> SELECT productID FROM products WHERE name LIKE '%Blue';
++-----------+
+| productID |
++-----------+
+|      1002 |
+|      1008 |
++-----------+
+2 rows in set (0.01 sec)
+
+6. [Optional] Отобразить 'name' всех продуктов, содержащих символ '2' в их 'name' и 'quantity' больше чем 9000.
+SELECT name FROM products WHERE name LIKE '%2%' AND quantity > 9000;  
+mysql> SELECT name FROM products WHERE name LIKE '%2%' AND quantity > 9000; 
++-----------+
+| name      |
++-----------+
+| Pencil 2B |
++-----------+
+1 row in set (0.00 sec)
+
+7. [Optional] Отобразить name и price всех продуктов, с колличеством в диапазоне между 4000 и 9000. Отсортировать вывод в алфавитном порядке по name  
+SELECT name, price FROM products WHERE quantity >= 4000 AND quantity < 9000 ORDER BY name ASC; 
+mysql> SELECT name, price FROM products WHERE quantity >= 4000 AND quantity < 9000 ORDER BY name ASC; 
++-------------+-------+
+| name        | price |
++-------------+-------+
+| Marker Blue |  2.74 |
+| Pen Blue    |  1.38 |
+| Pen Red     |  1.35 |
+| Pencil 2H   |  0.54 |
++-------------+-------+
+4 rows in set (0.01 sec)
+
+8. [Optional] Отобразить всю существующую информацию о продуктах имеющих price 0.53, 0.54 или 1.38
+SELECT * FROM products WHERE price = 0.53 OR price = 0.54 OR price = 1.38;
+mysql> SELECT * FROM products WHERE price = 0.53 OR price = 0.54 OR price = 1.38;
++-----------+-------------+-----------+----------+-------+
+| productID | productCode | name      | quantity | price |
++-----------+-------------+-----------+----------+-------+
+|      1002 | PEN         | Pen Blue  |     8000 |  1.38 |
+|      1003 | PEN         | Pen Black |     2000 |  1.38 |
+|      1004 | PEC         | Pencil 2B |    10000 |  0.53 |
+|      1005 | PEC         | Pencil 2H |     8000 |  0.54 |
++-----------+-------------+-----------+----------+-------+
+4 rows in set (0.00 sec)
+
+VAR 8/2
+SELECT * FROM products WHERE price IN (0.53, 0.54, 1.38);
+mysql> SELECT * FROM products WHERE price IN (0.53, 0.54, 1.38);
++-----------+-------------+-----------+----------+-------+
+| productID | productCode | name      | quantity | price |
++-----------+-------------+-----------+----------+-------+
+|      1002 | PEN         | Pen Blue  |     8000 |  1.38 |
+|      1003 | PEN         | Pen Black |     2000 |  1.38 |
+|      1004 | PEC         | Pencil 2B |    10000 |  0.53 |
+|      1005 | PEC         | Pencil 2H |     8000 |  0.54 |
++-----------+-------------+-----------+----------+-------+
+4 rows in set (0.01 sec)
